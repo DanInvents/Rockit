@@ -1,2 +1,2 @@
 # Rockit
-Repository for the rocket operation computing kit (Rockit)
+Repository for the rocket-operation computing kit (Rockit)
