@@ -13,7 +13,6 @@ void readRotSwitch(){
 
 void switchStartup(){
     readRotSwitch();
-
   if (rotValue == 10){ //A Automatic mode
     servo1.attach(28);
     servo2.attach(27);
