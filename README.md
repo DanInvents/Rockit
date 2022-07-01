@@ -1,7 +1,7 @@
 # Rockit
 Repository for the rocket-operation computing kit (Rockit)
 
-Firmware 1.0 contains the firmware files for Rockit rev 1.0.
+Firmware contains the firmware files for Rockit rev 1.0.
 
 RockitRev1UserManual1.1 is the user manual for Rockit rev 1.0.
 
