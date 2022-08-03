@@ -212,7 +212,7 @@ void loop() {
       dataFile.print(',');
       dataFile.print(filteredAltitudeDelta);
       dataFile.print(',');
-      dataFile.print(-rocketAccel);
+      dataFile.print(rocketAccel);
       dataFile.print(',');
       dataFile.print(event.acceleration.z/9.81);
       dataFile.print(',');
