@@ -88,7 +88,7 @@ char filename[] = "00.CSV"; //Dummy file name to store flight data.
 
 //Config. rotary switch. This configuration is for the real-coded rotary switch
 byte switchPins[4] = {15, 13, 14, 16}; //Digital pins assigned to the rotary switch
-byte rotValue = B0000; // Variable for printing value over serial debug
+byte rotValue = 0B0000; // Variable for printing value over serial debug
 byte switchPos; // Variable for storing the current switch possition
 byte previousValue; //Variable for storing the previous switch possition
 
@@ -109,7 +109,7 @@ int statusLED = 26; //Status LED
 //Servos
 int servo1pin = 28;
 int servo2pin = 27;
-int zeroPos = 540; //These are the pulse widths for an MG90S servo motor
+int zeroPos = 2570; //These are the pulse widths for an MG90S servo motor
 int extendedPos = 2580;
 
 //Piezo
@@ -121,7 +121,7 @@ Servo servo1; //Creates a servo1 object
 Servo servo2; //Creates a servo2 object
 
 void setup() {
-  //Serial.begin(9600); //For debugging purposes only
+  Serial.begin(9600); //For debugging purposes only
   EEPROM.begin(512); //Emulates EEPROM by allocating 512 kB from the flash memory
 
   //Declaration of the I2C pins
