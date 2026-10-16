@@ -1,0 +1,612 @@
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{float}
+
+\geometry{margin=22mm}
+
+\definecolor{ManualBlue}{HTML}{2F5D7C}
+\definecolor{ManualGray}{HTML}{F4F5F6}
+\definecolor{ManualDark}{HTML}{222222}
+\definecolor{WarningRed}{HTML}{A43B32}
+\definecolor{NoteGreen}{HTML}{3B6E52}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=ManualBlue,
+    urlcolor=ManualBlue
+}
+
+\titleformat{\section}
+  {\Large\bfseries\color{ManualDark}}
+  {\thesection}{0.75em}{}
+
+\titleformat{\subsection}
+  {\large\bfseries\color{ManualDark}}
+  {\thesubsection}{0.75em}{}
+
+\setlist[itemize]{leftmargin=1.6em,itemsep=0.25em,topsep=0.35em}
+\setlist[enumerate]{leftmargin=1.8em,itemsep=0.35em,topsep=0.35em}
+
+\newtcolorbox{importantbox}{
+  colback=ManualGray,
+  colframe=ManualBlue,
+  boxrule=0.7pt,
+  arc=2mm,
+  left=2.5mm,right=2.5mm,top=2mm,bottom=2mm
+}
+
+\newtcolorbox{warningbox}{
+  colback=red!3,
+  colframe=WarningRed,
+  boxrule=0.8pt,
+  arc=2mm,
+  left=2.5mm,right=2.5mm,top=2mm,bottom=2mm
+}
+
+\newtcolorbox{tipbox}{
+  colback=green!3,
+  colframe=NoteGreen,
+  boxrule=0.7pt,
+  arc=2mm,
+  left=2.5mm,right=2.5mm,top=2mm,bottom=2mm
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Rockit Rev. 1}
+\rhead{User Manual -- Firmware 3.0}
+\cfoot{\thepage}
+
+\renewcommand{\arraystretch}{1.2}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+
+\vspace*{12mm}
+
+{\Huge\bfseries Rockit Rev. 1}\\[3mm]
+{\LARGE User Manual}\\[4mm]
+{\Large Firmware 3.0}\\[15mm]
+
+\includegraphics[width=0.78\textwidth]{JSTconnector.jpg}
+
+\vfill
+
+{\Large\bfseries Triskel Instruments}\\[2mm]
+{\normalsize formerly DanInvents}\\[8mm]
+
+{\large \today}
+
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{About this manual}
+
+This manual explains how to prepare, configure, fly and update the Rockit Rev. 1 flight computer using Firmware 3.0.
+
+Rockit was originally released under the name \textbf{DanInvents}. The product is now developed and supported by \textbf{Triskel Instruments}. Older boards, manuals or videos may still carry the DanInvents name.
+
+\begin{importantbox}
+\textbf{Firmware 3.0 is a major software update.} It introduces a new MicroPython-based firmware, improved launch and apogee detection, safer recovery sequencing, persistent settings, and a standalone Windows updater.
+\end{importantbox}
+
+\section{Disclaimer}
+
+In no respect shall Triskel Instruments be accountable for liabilities, claims, demands, damages or suits resulting from the use of Rockit and/or its related firmware.
+
+By using this product, you accept the risks associated with model rocketry, lithium batteries, servo-driven recovery systems and experimental electronics.
+
+Always test your complete recovery system on the ground before flight.
+
+\section{What is Rockit?}
+
+Rockit, or \textit{Rocket Operation Computing Kit}, is a compact flight computer designed for model rocketry.
+
+It provides:
+
+\begin{itemize}
+    \item altitude and acceleration measurement;
+    \item automatic or timed recovery deployment;
+    \item control of two servo motors;
+    \item flight-data logging to a microSD card;
+    \item maximum-altitude reporting after flight;
+    \item battery charging for a single-cell lithium battery.
+\end{itemize}
+
+\subsection{Main specifications}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{>{\bfseries}l X}
+\toprule
+Specification & Value \\
+\midrule
+Dimensions & 44 mm $\times$ 22 mm $\times$ 9 mm \\
+Mass & 5 g \\
+Input voltage & 2.3 to 5.6 V \\
+Idle current & Approx. 70 mA \\
+Logging current & Approx. 80 mA \\
+Peak current while beeping & Approx. 200 mA \\
+Typical current while moving a servo & Approx. 400 mA \\
+Maximum continuous 5 V output current & 2 A \\
+Battery charging current & 500 mA \\
+Sampling rate & 100 Hz \\
+Altimeter range & Up to 9160 m \\
+Accelerometer range & Up to 22.6 g \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{tipbox}
+The practical lower voltage limit is often set by the protection circuit inside the LiPo battery. Many protected batteries disconnect themselves at around 3 V.
+\end{tipbox}
+
+\section{Board layout}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{Rockit dimensions.png}
+\caption{Rockit Rev. 1 dimensions. The 2.54 mm holes are connected to ground and can be used for probing.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\textwidth]{rockitLayout.png}
+\caption{Top-side layout. The I\textsuperscript{2}C pins and servo signal pins use 3.3 V logic.}
+\end{figure}
+
+\begin{warningbox}
+\textbf{Do not apply 5 V logic to the 3.3 V signal pins.} Doing so may damage the RP2040 microcontroller.
+\end{warningbox}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\textwidth]{bottomLayout.png}
+\caption{Bottom-side layout. Servo 1 uses GPIO 28 and Servo 2 uses GPIO 27. I\textsuperscript{2}C SDA and SCL use GPIO 10 and GPIO 11.}
+\end{figure}
+
+\section{Before the first flight}
+
+Before flying Rockit, check the following:
+
+\begin{enumerate}
+    \item Insert a compatible microSD card.
+    \item Connect the battery with the correct polarity.
+    \item Configure both servo start and end positions.
+    \item Configure the required deployment delays.
+    \item Run the position-3 recovery-system test.
+    \item Confirm that the battery can move both servos without shutting down.
+    \item Make sure the pressure sensor is protected from direct sunlight but its vent hole is not blocked.
+\end{enumerate}
+
+\section{Power and battery}
+
+Rockit is designed to operate from 2.3 to 5.6 V.
+
+The onboard battery charger is intended only for a \textbf{single-cell (1S) lithium-ion or lithium-polymer battery}, typically 3.7 V nominal.
+
+\begin{warningbox}
+\textbf{Battery polarity is critical.} If Rockit becomes unusually hot immediately after connecting the battery, disconnect it at once.
+\end{warningbox}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.48\textwidth]{JSTconnector.png}
+\caption{Correct JST battery polarity. Red is battery positive and black is ground.}
+\end{figure}
+
+Servo motors can draw large current spikes. A battery with an aggressive protection circuit may shut itself off when a servo moves.
+
+\textbf{Always test the complete battery and servo combination before flight.}
+
+\section{Choosing a microSD card}
+
+For best compatibility:
+
+\begin{itemize}
+    \item use a Class 10 microSD card;
+    \item use 16 GB or less when possible;
+    \item format larger cards as FAT32 if necessary.
+\end{itemize}
+
+If Rockit appears to start but does not proceed normally, the microSD card is one of the first things to check.
+
+\section{Rotary switch quick reference}
+
+The rotary switch is used both to select the flight mode and to configure Rockit.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{>{\centering\arraybackslash\bfseries}p{1.4cm} X}
+\toprule
+Position & Function \\
+\midrule
+A & Automatic mode: deploy at detected apogee \\
+B & Timer mode: deploy after a preset time from launch detection \\
+C & Set Servo 1 delay after apogee in Automatic mode \\
+D & Set Servo 1 delay after launch in Timer mode \\
+E & Set Servo 1 start position \\
+F & Set Servo 1 final position \\
+0 & Set Servo 2 start position \\
+1 & Set Servo 2 final position \\
+2 & Set additional delay before Servo 2 moves \\
+3 & Test the complete servo/recovery sequence \\
+4--9 & Inactive / non-flight positions \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{importantbox}
+Some Rockit boards use a standard-coded rotary switch and some use a complementary-coded switch. Firmware 3.0 supports both. The Windows updater can detect the correct type automatically.
+\end{importantbox}
+
+\section{Changing settings}
+
+The basic configuration workflow is:
+
+\begin{enumerate}
+    \item Turn Rockit off.
+    \item Turn the rotary switch to the setting you want to change.
+    \item Turn Rockit on.
+    \item Follow the LED/buzzer feedback.
+    \item Rotate the switch to choose the desired value.
+    \item Keep the value stable so Rockit can save it.
+    \item Turn Rockit off when the setting has been stored.
+\end{enumerate}
+
+Firmware 3.0 stores the settings in a persistent configuration file, so they remain available after power is removed and can also be backed up by the firmware updater.
+
+\subsection{Setting the deployment delays}
+
+There are three timing settings:
+
+\begin{itemize}
+    \item \textbf{Position C}: delay between apogee detection and Servo 1 movement in Automatic mode;
+    \item \textbf{Position D}: delay between launch detection and Servo 1 movement in Timer mode;
+    \item \textbf{Position 2}: additional delay before Servo 2 moves.
+\end{itemize}
+
+\subsubsection*{Automatic mode delay -- position C}
+
+Each rotary step adds \textbf{0.5 seconds}.
+
+\begin{center}
+\begin{tabular}{c|cccccccc}
+Switch value & 0 & 1 & 2 & 3 & 4 & 5 & 10 & 15 \\
+\hline
+Delay (s) & 0 & 0.5 & 1.0 & 1.5 & 2.0 & 2.5 & 5.0 & 7.5
+\end{tabular}
+\end{center}
+
+\subsubsection*{Timer mode delay -- position D}
+
+Each rotary step adds \textbf{1 second}.
+
+\begin{center}
+\begin{tabular}{c|cccccccc}
+Switch value & 0 & 1 & 2 & 3 & 4 & 5 & 10 & 15 \\
+\hline
+Delay (s) & 0 & 1 & 2 & 3 & 4 & 5 & 10 & 15
+\end{tabular}
+\end{center}
+
+\subsubsection*{Servo 2 additional delay -- position 2}
+
+Each rotary step adds \textbf{0.5 seconds} after Servo 1.
+
+\begin{center}
+\begin{tabular}{c|cccccccc}
+Switch value & 0 & 1 & 2 & 3 & 4 & 5 & 10 & 15 \\
+\hline
+Additional delay (s) & 0 & 0.5 & 1.0 & 1.5 & 2.0 & 2.5 & 5.0 & 7.5
+\end{tabular}
+\end{center}
+
+\begin{tipbox}
+For Servo 2, think of the setting as ``how long after Servo 1 should Servo 2 move?'' This is usually easier to understand than calculating the total time from launch or apogee.
+\end{tipbox}
+
+\subsection{Setting the servo positions}
+
+Use:
+
+\begin{itemize}
+    \item \textbf{E} for Servo 1 start position;
+    \item \textbf{F} for Servo 1 final position;
+    \item \textbf{0} for Servo 2 start position;
+    \item \textbf{1} for Servo 2 final position.
+\end{itemize}
+
+When adjusting a servo, the rotary switch gives 16 possible positions from 0 to F.
+
+You do not need to calculate an angle. Simply choose the position that places your mechanism where you want it.
+
+\begin{tipbox}
+If a servo does not appear to move during deployment, check that its start and final positions are not set to the same value.
+\end{tipbox}
+
+\section{Testing the recovery system}
+
+Position \textbf{3} performs a complete ground test of the recovery servos.
+
+With Rockit turned off:
+
+\begin{enumerate}
+    \item turn the rotary switch to \textbf{3};
+    \item power Rockit on;
+    \item Servo 1 moves to its programmed start position;
+    \item Servo 2 moves to its programmed start position;
+    \item Rockit waits approximately 5 seconds;
+    \item Servo 1 moves to its programmed final position;
+    \item Servo 2 moves to its programmed final position;
+    \item the flight computer then remains inactive.
+\end{enumerate}
+
+\begin{importantbox}
+Use position 3 before every flight in which you have changed the recovery mechanism, servo linkage, battery, or servo settings.
+\end{importantbox}
+
+\section{Flight modes}
+
+\subsection{Automatic mode -- position A}
+
+Automatic mode is intended for normal recovery deployment at apogee.
+
+After startup:
+
+\begin{enumerate}
+    \item Rockit arms after approximately 3 seconds.
+    \item Rockit waits for launch.
+    \item Launch is confirmed using both altitude and acceleration information.
+    \item During ascent, Rockit tracks the filtered altitude.
+    \item After apogee is confirmed, Rockit waits for the delay configured with position C.
+    \item Servo 1 moves.
+    \item Servo 2 moves after the additional delay configured with position 2.
+\end{enumerate}
+
+\subsection{How launch detection works}
+
+Rockit does not trigger from a single bump or a single pressure change.
+
+For a real flight, the firmware looks for:
+
+\begin{itemize}
+    \item an altitude increase of about \textbf{10 m};
+    \item a change in acceleration of more than about \textbf{2 g};
+    \item the acceleration condition to persist for multiple samples;
+    \item both events to occur close together in time.
+\end{itemize}
+
+This makes false launch detection from handling or vibration much less likely than in earlier firmware versions.
+
+\subsection{How apogee detection works}
+
+Firmware 3.0 no longer declares apogee just because one or two altitude samples decrease.
+
+Instead, it:
+
+\begin{itemize}
+    \item tracks the highest filtered altitude reached;
+    \item ignores very early false peaks immediately after launch;
+    \item waits until the rocket has climbed to a meaningful altitude;
+    \item requires a clear drop from the peak;
+    \item requires that drop to persist briefly before deployment begins.
+\end{itemize}
+
+\begin{importantbox}
+Rockit waits for a clear and persistent descent from the detected altitude peak before treating the rocket as being past apogee.
+\end{importantbox}
+
+\subsection{Timer mode -- position B}
+
+Timer mode deploys the recovery system after a fixed time from launch detection.
+
+After launch is confirmed:
+
+\begin{enumerate}
+    \item Rockit waits for the time configured with position D.
+    \item Servo 1 moves.
+    \item Rockit waits for the additional Servo 2 delay configured with position 2.
+    \item Servo 2 moves.
+\end{enumerate}
+
+Timer mode is useful when you want predictable deployment timing rather than apogee-based deployment.
+
+\section{What happens after launch?}
+
+During flight, Rockit records data to the microSD card.
+
+The logged data include:
+
+\begin{itemize}
+    \item time;
+    \item altitude;
+    \item filtered altitude;
+    \item longitudinal acceleration;
+    \item perpendicular acceleration;
+    \item temperature.
+\end{itemize}
+
+Rockit also keeps a short pre-launch buffer, so the saved file contains data from immediately before takeoff.
+
+Approximately one minute after launch, Rockit transitions to maximum-altitude reporting.
+
+\section{Reading the maximum altitude}
+
+After the flight, Rockit repeatedly reports the maximum altitude using the buzzer.
+
+The pattern is:
+
+\begin{enumerate}
+    \item two short beeps mark the start;
+    \item each altitude digit is beeped separately;
+    \item two short beeps mark the end;
+    \item the pattern repeats.
+\end{enumerate}
+
+The digit \textbf{0} is represented by a long beep.
+
+\subsection*{Example: 67 m}
+
+You will hear:
+
+\begin{center}
+two short beeps $\rightarrow$ six short beeps $\rightarrow$ seven short beeps $\rightarrow$ two short beeps
+\end{center}
+
+The complete flight record can also be read directly from the CSV file stored on the microSD card.
+
+\section{Updating Rockit}
+
+Firmware 3.0 introduces a standalone Windows updater.
+
+You no longer need Python, Arduino IDE, VS Code or \texttt{mpremote}.
+
+\subsection{Recommended update method}
+
+\begin{enumerate}
+    \item Download the latest Rockit firmware updater from:
+    \begin{center}
+    \url{https://github.com/DanInvents/Rockit/releases}
+    \end{center}
+    \item Connect Rockit to the computer using USB.
+    \item Run \texttt{Rockit\_Firmware\_Updater.exe}.
+    \item Follow the instructions shown on screen.
+    \item If asked, turn the rotary switch to position A so the updater can identify the switch coding.
+    \item Wait until the updater displays \textbf{UPDATE SUCCESSFUL}.
+\end{enumerate}
+
+The updater can:
+
+\begin{itemize}
+    \item identify an existing MicroPython installation;
+    \item back up saved Rockit settings;
+    \item install Firmware 3.0;
+    \item restore servo positions and recovery delays;
+    \item detect standard or complementary-coded rotary switches;
+    \item guide older Arduino-based Rockit units through BOOTSEL migration;
+    \item install the validated MicroPython runtime automatically.
+\end{itemize}
+
+\begin{importantbox}
+If you are updating an older Arduino-based Rockit, its old EEPROM settings cannot be transferred automatically. Configure and test the servos again after the migration.
+\end{importantbox}
+
+\section{What changed in Firmware 3.0?}
+
+Firmware 3.0 is the largest software revision since Rockit was introduced.
+
+The most important improvements are:
+
+\begin{itemize}
+    \item more reliable launch detection using altitude and acceleration together;
+    \item more robust automatic apogee detection;
+    \item improved recovery-servo timing and sequencing;
+    \item improved servo startup and detach behavior;
+    \item a dedicated position-3 recovery-system test;
+    \item a shorter arming delay;
+    \item persistent human-readable settings;
+    \item settings backup and restore during firmware updates;
+    \item support for both rotary-switch hardware variants;
+    \item improved pre-launch buffering and SD-card logging;
+    \item clearer maximum-altitude reporting;
+    \item a much faster post-flight report;
+    \item improved buzzer and PWM handling;
+    \item standalone Windows firmware updates;
+    \item migration from the previous Arduino firmware to MicroPython.
+\end{itemize}
+
+Firmware 3.0 has been flight-tested successfully in both:
+
+\begin{itemize}
+    \item \textbf{A -- Automatic mode};
+    \item \textbf{B -- Timer mode}.
+\end{itemize}
+
+\section{Frequently asked questions}
+
+\subsection*{My flight computer gets very hot when I connect the battery. What should I do?}
+
+Disconnect the battery immediately. The battery connector polarity is probably reversed.
+
+Do not leave the battery connected while diagnosing the problem.
+
+\subsection*{My servo does not move.}
+
+Check the following:
+
+\begin{itemize}
+    \item the servo is connected to the correct output;
+    \item the battery can supply enough current;
+    \item the start and final positions are different;
+    \item the mechanism is not mechanically jammed;
+    \item the position-3 ground test works correctly.
+\end{itemize}
+
+\subsection*{Rockit does not start normally.}
+
+Check the microSD card first.
+
+For best compatibility, use a Class 10 card of 16 GB or less.
+
+Also check that the battery voltage is adequate.
+
+\subsection*{Can I test launch detection by tilting the board?}
+
+No. Firmware 3.0 uses both acceleration and altitude changes to detect launch.
+
+For checking the recovery mechanism, use rotary position \textbf{3} instead of trying to simulate a complete launch.
+
+\subsection*{What is the difference between standard and complementary-coded Rockit boards?}
+
+Some production batches used rotary switches with opposite electrical coding.
+
+Firmware 3.0 supports both types using the same firmware.
+
+The Windows updater can detect the correct type automatically by asking you to place the switch at position \textbf{A}.
+
+\subsection*{Do I need Arduino IDE or Python to update Rockit?}
+
+No.
+
+For Firmware 3.0, use the standalone Windows updater from the Rockit GitHub Releases page.
+
+\section{Support and firmware downloads}
+
+Firmware releases and update information are available at:
+
+\begin{center}
+\url{https://github.com/DanInvents/Rockit/releases}
+\end{center}
+
+Rockit is developed and supported by:
+
+\begin{center}
+\textbf{Triskel Instruments}\\
+formerly DanInvents
+\end{center}
+
+\end{document}
