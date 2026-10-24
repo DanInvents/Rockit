@@ -4,7 +4,7 @@ Rockit Firmware 3.0 is a major update over the previous Arduino-based firmware. 
 
 **Firmware version:** 3.0  
 **Current build:** `55d0209`  
-**Runtime:** MicroPython 1.29.0 / `RPI_PICO`
+**Runtime:** MicroPython 1.29.0 / `RPI_PICO`\n\n[Download the Rockit Rev.1 User Manual - Firmware 3.0 (PDF)](Rockit_User_Manual_Firmware_3.0.pdf)
 
 ---
 
