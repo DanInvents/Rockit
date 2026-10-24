@@ -380,7 +380,7 @@ Both standard-coded and complementary-coded rotary-switch variants are supported
 
 For customers, the recommended update method is:
 
-`Rockit_Firmware_Updater_v3.0.exe`
+`Rockit_Firmware_Updater.exe`
 
 No separate Python installation is required.
 
